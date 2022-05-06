@@ -1,4 +1,5 @@
 import pygame
+import LegalMove
 
 pygame.init()
 screen = pygame.display.set_mode((800,600))
@@ -204,14 +205,6 @@ def show_turn(turn,dx,dy):
     screen.blit(player,(dx,dy))
 
 
-def ShowAvailableMoves(piece, dx, dy):
-    ListOfMoves = []
-    if piece.find("Pawn") :
-        DrawDot(dx,dy+1)
-        ListOfMoves.append((dx,dy+1))
-    return ListOfMoves
-
-
 current_white_time = current_black_time = currentTime = 0
 def DisplayTimeWhite():
     current_white_time = pygame.time.get_ticks()
@@ -224,6 +217,66 @@ def DisplayTimeBlack():
     score_surf = font.render(f'{100-int(current_black_time/1000)} : 00',False,(255,255,255))
     score_rect = score_surf.get_rect(center = (70,500))
     screen.blit(score_surf,score_rect)
+
+
+def Inside(dx,dy) :
+    return dx >= 1 and dx <= 8 and dy >= 1 and dy <= 8
+
+def LegalMoves(startx, starty,currentPiece):
+    List = []
+    if "Rook" in currentPiece :
+
+        while (Inside(startx + 1, starty) and Map[startx + 1][starty] == 0) :
+            List.append((startx + 1,starty))
+            startx = startx + 1
+
+        while (Inside(startx - 1, starty) and Map[startx - 1][starty] == 0) :
+            List.append((startx - 1,starty))
+            startx = startx - 1
+
+        while (Inside(startx, starty + 1) and Map[startx][starty + 1] == 0) :
+            List.append((startx,starty + 1))
+            starty = starty + 1
+
+        while (Inside(startx, starty - 1) and Map[startx][starty - 1] == 0) :
+            List.append((startx,starty - 1))
+            starty = starty - 1
+
+        return List
+
+
+#Boolean returing if a move is okay or not
+def LegalMove(startx, starty, stopx, stopy, currentPiece, MoveCounter) :
+    #Test if the square is free
+    if MoveCounter % 2 == 1 :
+        if Map[stopx][stopy] != 0 :
+            if Map[stopx][stopy][0] == 'B' :
+                return False
+    if MoveCounter % 2 == 0 :
+        if Map[stopx][stopy] != 0 :
+            if Map[stopx][stopy][0] == "W":
+                return False
+
+
+    #Test if the moved was played by the correct player
+    if MoveCounter % 2 == 1 :
+        if currentPiece[0] == 'W' :
+            return False
+    else :
+        if currentPiece[0] == 'B' :
+            return False
+
+    #HandleTheKing
+    if "King" in currentPiece :
+        if abs(startx - stopx) > 1 or abs(starty - stopy) > 1:
+            return False
+
+    #HandleTheRooks
+    if "Rook" in currentPiece :
+        ListOfMoves = LegalMoves(startx,starty,currentPiece)
+        if ((stopx, stopy) not in ListOfMoves) :
+            return False
+    return True
 
 #Game loop
 startx = starty = stopx = stopy = 150
@@ -240,11 +293,10 @@ while running :
         elif event.type == pygame.MOUSEBUTTONDOWN :
             (startx,starty) = pygame.mouse.get_pos()
             currentPiece = getPiece(*toSquare(startx, starty))
-            #print(ShowAvailableMoves(currentPiece, *toSquare(startx, starty)))
             clicked = True
         elif event.type == pygame.MOUSEBUTTONUP :
             (stopx,stopy) = pygame.mouse.get_pos()
-            if toSquare(startx, starty) != toSquare(stopx, stopy) :
+            if toSquare(startx, starty) != toSquare(stopx, stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True:
                 Move(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
                 MoveCounter = MoveCounter + 1
                 buttonPressTime = pygame.time.get_ticks()
