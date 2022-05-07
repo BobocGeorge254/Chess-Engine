@@ -115,7 +115,16 @@ def Move(startx,starty,stopx,stopy,stringPiece):
     else :
         DrawBlackSquare(*GetCoordinates(startx, starty))
     Map[startx][starty] = 0
-    Map[stopx][stopy] = stringPiece
+    PawnPromotion = False
+    if "Pawn" in stringPiece :
+        if stopy == 1 :
+            Map[stopx][stopy] = "BlackQueen"
+            PawnPromotion = True
+        elif stopy == 8 :
+            Map[stopx][stopy] = "WhiteQueen"
+            PawnPromotion = True
+    if PawnPromotion is False :
+        Map[stopx][stopy] = stringPiece
 
 #Get the square of 2 coordinates
 def toSquare(dx,dy) :
@@ -377,6 +386,8 @@ def LegalMoves(startx, starty,currentPiece):
             if Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] != 0 and Map[startx - 1][starty - 1][0] == 'W' :
                 List.append( (startx - 1, starty - 1))
 
+        #Pawn promotion took care in Move function
+
     return List
 
 
@@ -440,6 +451,30 @@ def LegalMove(startx, starty, stopx, stopy, currentPiece, MoveCounter) :
 
     return True
 
+def BlackInCheck() :
+    xKing = 0
+    yKing = 0
+    List = []
+    for i in range (1,9) :
+        for j in range(1,9) :
+            if Map[i][j] == 'BlackKing' :
+                xKing = j
+                yKing = i
+            if Map[i][j] != 0 and Map[i][j][0] == 'W' :
+                if "Pawn" in Map[i][j] :
+                    List = List + LegalMoves(i,j,"Pawn")
+                if "Knight" in Map[i][j] :
+                    List = List + LegalMoves(i,j,"Knight")
+                if "Bishop" in Map[i][j] :
+                    List = List + LegalMoves(i,j,"Bishop")
+                if "Rook" in Map[i][j] :
+                    List = List + LegalMoves(i,j,"Rook")
+                if "Queen" in Map[i][j] :
+                    List = List + LegalMoves(i,j,"Queen")
+    if (xKing, yKing) in List :
+        return True
+    return False
+
 #Game loop
 startx = starty = stopx = stopy = 150
 y = WhitePawn
@@ -458,7 +493,7 @@ while running :
             clicked = True
         elif event.type == pygame.MOUSEBUTTONUP :
             (stopx,stopy) = pygame.mouse.get_pos()
-            if toSquare(startx, starty) != toSquare(stopx, stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True:
+            if toSquare(startx, starty) != toSquare(stopx, stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True :
                 Move(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
                 MoveCounter = MoveCounter + 1
                 buttonPressTime = pygame.time.get_ticks()
