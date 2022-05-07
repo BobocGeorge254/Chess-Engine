@@ -224,25 +224,162 @@ def Inside(dx,dy) :
 
 def LegalMoves(startx, starty,currentPiece):
     List = []
+
+    #Rook
     if "Rook" in currentPiece :
+        copyStartx = startx
+        copyStarty = starty
 
-        while (Inside(startx + 1, starty) and Map[startx + 1][starty] == 0) :
-            List.append((startx + 1,starty))
-            startx = startx + 1
+        if Inside(startx + 1, starty) and Map[startx + 1][starty] == 0 :
+            while Inside(startx + 1, starty) and Map[startx + 1][starty] == 0 :
+                List.append((startx + 1,starty))
+                startx = startx + 1
+        if MoveCounter % 2 == 0 and Inside(startx + 1, starty) and Map[startx + 1][starty][0] == 'B' :
+            List.append((startx + 1, starty))
+        if MoveCounter % 2 == 1 and Inside(startx + 1, starty) and Map[startx + 1][starty][0] == 'W' :
+            List.append((startx + 1, starty))
 
-        while (Inside(startx - 1, starty) and Map[startx - 1][starty] == 0) :
-            List.append((startx - 1,starty))
-            startx = startx - 1
+        startx = copyStartx
+        starty = copyStarty
+        if Inside(startx - 1, starty) and Map[startx - 1][starty] == 0 :
+            while (Inside(startx - 1, starty) and Map[startx - 1][starty] == 0) :
+                List.append((startx - 1,starty))
+                startx = startx - 1
+        if MoveCounter % 2 == 0 and Inside(startx - 1, starty) and Map[startx - 1][starty][0] == 'B' :
+            List.append((startx - 1, starty))
+        if MoveCounter % 2 == 1 and Inside(startx - 1, starty) and Map[startx - 1][starty][0] == 'W' :
+            List.append((startx - 1, starty))
 
-        while (Inside(startx, starty + 1) and Map[startx][starty + 1] == 0) :
-            List.append((startx,starty + 1))
-            starty = starty + 1
 
-        while (Inside(startx, starty - 1) and Map[startx][starty - 1] == 0) :
-            List.append((startx,starty - 1))
-            starty = starty - 1
+        startx = copyStartx
+        starty = copyStarty
+        if Inside(startx, starty + 1) and Map[startx][starty + 1] == 0 :
+            while (Inside(startx, starty + 1) and Map[startx][starty + 1] == 0) :
+                List.append((startx,starty + 1))
+                starty = starty + 1
+        if MoveCounter % 2 == 0 and Inside(startx, starty + 1) and Map[startx][starty + 1][0] == 'B':
+            List.append((startx, starty + 1))
+        if MoveCounter % 2 == 1 and Inside(startx, starty + 1) and Map[startx][starty + 1][0] == 'W':
+            List.append((startx, starty + 1))
+
+        startx = copyStartx
+        starty = copyStarty
+        if Inside(startx, starty - 1) and Map[startx][starty - 1] == 0 :
+            while (Inside(startx, starty - 1) and Map[startx][starty - 1] == 0) :
+                List.append((startx,starty - 1))
+                starty = starty - 1
+        if MoveCounter % 2 == 0 and Inside(startx, starty - 1) and Map[startx][starty - 1][0] == 'B':
+            List.append((startx, starty - 1))
+        if MoveCounter % 2 == 1 and Inside(startx, starty - 1) and Map[startx][starty - 1][0] == 'W':
+            List.append((startx, starty - 1))
 
         return List
+
+    #Bishop
+    if "Bishop" in currentPiece:
+        copyStartx = startx
+        copyStarty = starty
+
+        if Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1] == 0:
+            while Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1] == 0:
+                List.append((startx + 1, starty + 1))
+                startx = startx + 1
+                starty = starty + 1
+        if MoveCounter % 2 == 0 and Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1][0] == 'B':
+            List.append((startx + 1, starty + 1))
+        if MoveCounter % 2 == 1 and Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1][0] == 'W':
+            List.append((startx + 1, starty + 1))
+
+        startx = copyStartx
+        starty = copyStarty
+        if Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] == 0:
+            while Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] == 0:
+                List.append((startx + 1, starty - 1))
+                startx = startx + 1
+                starty = starty - 1
+        if MoveCounter % 2 == 0 and Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1][0] == 'B':
+            List.append((startx + 1, starty - 1))
+        if MoveCounter % 2 == 1 and Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1][0] == 'W':
+            List.append((startx + 1, starty - 1))
+
+        startx = copyStartx
+        starty = copyStarty
+        if Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1] == 0:
+            while Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1] == 0:
+                List.append((startx - 1, starty + 1))
+                startx = startx - 1
+                starty = starty + 1
+        if MoveCounter % 2 == 0 and Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1][0] == 'B':
+            List.append((startx - 1, starty + 1))
+        if MoveCounter % 2 == 1 and Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1][0] == 'W':
+            List.append((startx - 1, starty + 1))
+
+        startx = copyStartx
+        starty = copyStarty
+        if Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] == 0:
+            while Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] == 0:
+                List.append((startx - 1, starty - 1))
+                startx = startx - 1
+                starty = starty - 1
+        if MoveCounter % 2 == 0 and Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1][0] == 'B':
+            List.append((startx - 1, starty - 1))
+        if MoveCounter % 2 == 1 and Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1][0] == 'W':
+            List.append((startx - 1, starty - 1))
+
+        return List
+
+    if "Knight" in currentPiece :
+        copyStartx = startx
+        copyStarty = starty
+        Knight = [(-2, -1), (-1, -2), (-2, 1), (-1, 2), (1, -2), (2, -1), (1, 2), (2, 1)]
+        for Move in Knight :
+            startx = copyStartx
+            starty = copyStarty
+            if Inside(startx + Move[0], starty + Move[1]) and Map[startx + Move[0]][starty + Move[1]] == 0:
+                List.append((startx + Move[0], starty + Move[1]))
+            elif MoveCounter % 2 == 0 and Inside(startx + Move[0], starty + Move[1]) and Map[startx + Move[0]][starty + Move[1]][0] == 'B':
+                List.append((startx + Move[0], starty + Move[1]))
+            elif MoveCounter % 2 == 1 and Inside(startx + Move[0], starty + Move[1]) and Map[startx + Move[0]][starty + Move[1]][0] == 'W':
+                List.append((startx + Move[0], starty + Move[1]))
+
+        return  List
+
+    if "Pawn" in currentPiece :
+        copyStartx = startx
+        copyStarty = starty
+
+        #First Move
+        if MoveCounter % 2 == 0 and starty == 2 :
+            if Map[startx][starty + 1] == 0:
+                List.append( (startx, starty + 1) )
+            if Map[startx][starty + 2] == 0:
+                List.append( (startx, starty + 2) )
+        elif MoveCounter % 2 == 1 and starty == 7 :
+            if Map[startx][starty - 1] == 0:
+                List.append( (startx, starty - 1) )
+            if Map[startx][starty - 2] == 0:
+                List.append( (startx, starty - 2) )
+
+        #Every other move
+        if MoveCounter % 2 == 0 :
+            if Inside(startx, starty + 1) and Map[startx][starty + 1] == 0 :
+                List.append( (startx, starty + 1) )
+            if Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1] != 0 and Map[startx + 1][starty + 1][0] == 'B' :
+                List.append( (startx + 1, starty + 1))
+            if Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1] != 0 and Map[startx - 1][starty + 1][0] == 'B' :
+                List.append( (startx - 1, starty + 1))
+
+        if MoveCounter % 2 == 1 :
+            if Inside(startx, starty - 1) and Map[startx][starty - 1] == 0 :
+                List.append( (startx, starty - 1) )
+            if Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] != 0 and Map[startx + 1][starty - 1][0] == 'W' :
+                List.append( (startx + 1, starty - 1))
+            if Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] != 0 and Map[startx - 1][starty - 1][0] == 'W' :
+                List.append( (startx - 1, starty - 1))
+
+    return List
+
+
 
 
 #Boolean returing if a move is okay or not
@@ -266,16 +403,41 @@ def LegalMove(startx, starty, stopx, stopy, currentPiece, MoveCounter) :
         if currentPiece[0] == 'B' :
             return False
 
-    #HandleTheKing
+    #Handle The King
     if "King" in currentPiece :
         if abs(startx - stopx) > 1 or abs(starty - stopy) > 1:
             return False
 
-    #HandleTheRooks
+    #Handle The Rooks
     if "Rook" in currentPiece :
         ListOfMoves = LegalMoves(startx,starty,currentPiece)
         if ((stopx, stopy) not in ListOfMoves) :
             return False
+
+    #Handle The Bishops
+    if "Bishop" in currentPiece :
+        ListOfMoves = LegalMoves(startx,starty,currentPiece)
+        if ((stopx, stopy) not in ListOfMoves) :
+            return False
+
+    #Handle The Queen as a Rook and a Bishop at the same time
+    if "Queen" in currentPiece :
+        ListOfMoves = LegalMoves(startx,starty,"Rook") + LegalMoves(startx,starty,"Bishop")
+        if ((stopx, stopy) not in ListOfMoves) :
+            return False
+
+    #Handle The Knight
+    if "Knight" in currentPiece :
+        ListOfMoves = LegalMoves(startx, starty, currentPiece)
+        if ((stopx, stopy) not in ListOfMoves) :
+            return False
+
+    #Handle The Pawns
+    if "Pawn" in currentPiece :
+        ListOfMoves = LegalMoves(startx, starty, currentPiece)
+        if ((stopx, stopy) not in ListOfMoves) :
+            return False
+
     return True
 
 #Game loop
