@@ -1,16 +1,28 @@
+import copy
 import pygame
-import LegalMove
+import DetLegalMove
 
 pygame.init()
 screen = pygame.display.set_mode((800,600))
 white = (255,255,255)
 black = (153,76,0)
 clock = pygame.time.Clock()
+xWhiteKing = xBlackKing = 4
+yWhiteKing = 1
+yBlackKing = 8
+WhiteInCheck = BlackInCheck = False
+WhiteOutOfCheck = BlackOutOfCheck = True
+startx = starty = stopx = stopy = 150
+running = True
+clicked = False
+MoveCounter = 0
+buttonPressTime = 0
 
 #Title and icon
 pygame.display.set_caption("Chess.com")
 icon = pygame.image.load("chess.png")
 pygame.display.set_icon(icon)
+BlackKingMoved = WhiteKingMoved = False
 
 #Draw Squares
 def DrawWhiteSquare(dx,dy):
@@ -110,6 +122,15 @@ def DrawInitialState():
 
 #Make a move
 def Move(startx,starty,stopx,stopy,stringPiece):
+    if "King" in stringPiece :
+        if "White" in stringPiece :
+            xWhiteKing = stopx
+            yWhiteKing = stopy
+            WhiteKingMoved = True
+        else :
+            xBlackKing = stopx
+            yBlackKing = stopy
+            BlackKingMoved = True
     if (Color[startx - 1][starty - 1] == "White") :
         DrawWhiteSquare(*GetCoordinates(startx,starty))
     else :
@@ -214,6 +235,7 @@ def show_turn(turn,dx,dy):
     screen.blit(player,(dx,dy))
 
 
+'''
 current_white_time = current_black_time = currentTime = 0
 def DisplayTimeWhite():
     current_white_time = pygame.time.get_ticks()
@@ -226,6 +248,7 @@ def DisplayTimeBlack():
     score_surf = font.render(f'{100-int(current_black_time/1000)} : 00',False,(255,255,255))
     score_rect = score_surf.get_rect(center = (70,500))
     screen.blit(score_surf,score_rect)
+'''
 
 
 def Inside(dx,dy) :
@@ -351,7 +374,11 @@ def LegalMoves(startx, starty,currentPiece):
             elif MoveCounter % 2 == 1 and Inside(startx + Move[0], starty + Move[1]) and Map[startx + Move[0]][starty + Move[1]][0] == 'W':
                 List.append((startx + Move[0], starty + Move[1]))
 
-        return  List
+        return List
+
+    #Queen treated as both a Bishop and a Rook
+    if "Queen" in currentPiece :
+        return LegalMoves(startx,starty,currentPiece[0:5] + "Bishop") + LegalMoves(startx,starty,currentPiece[0:5] + "Rook")
 
     if "Pawn" in currentPiece :
         copyStartx = startx
@@ -370,21 +397,22 @@ def LegalMoves(startx, starty,currentPiece):
                 List.append( (startx, starty - 2) )
 
         #Every other move
-        if MoveCounter % 2 == 0 :
-            if Inside(startx, starty + 1) and Map[startx][starty + 1] == 0 :
-                List.append( (startx, starty + 1) )
-            if Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1] != 0 and Map[startx + 1][starty + 1][0] == 'B' :
-                List.append( (startx + 1, starty + 1))
-            if Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1] != 0 and Map[startx - 1][starty + 1][0] == 'B' :
-                List.append( (startx - 1, starty + 1))
+        else :
+            if MoveCounter % 2 == 0 :
+                if Inside(startx, starty + 1) and Map[startx][starty + 1] == 0 :
+                    List.append( (startx, starty + 1) )
+                if Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1] != 0 and Map[startx + 1][starty + 1][0] == 'B' :
+                    List.append( (startx + 1, starty + 1))
+                if Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1] != 0 and Map[startx - 1][starty + 1][0] == 'B' :
+                    List.append( (startx - 1, starty + 1))
 
-        if MoveCounter % 2 == 1 :
-            if Inside(startx, starty - 1) and Map[startx][starty - 1] == 0 :
-                List.append( (startx, starty - 1) )
-            if Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] != 0 and Map[startx + 1][starty - 1][0] == 'W' :
-                List.append( (startx + 1, starty - 1))
-            if Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] != 0 and Map[startx - 1][starty - 1][0] == 'W' :
-                List.append( (startx - 1, starty - 1))
+            if MoveCounter % 2 == 1 :
+                if Inside(startx, starty - 1) and Map[startx][starty - 1] == 0 :
+                    List.append( (startx, starty - 1) )
+                if Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] != 0 and Map[startx + 1][starty - 1][0] == 'W' :
+                    List.append( (startx + 1, starty - 1))
+                if Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] != 0 and Map[startx - 1][starty - 1][0] == 'W' :
+                    List.append( (startx - 1, starty - 1))
 
         #Pawn promotion took care in Move function
 
@@ -416,6 +444,30 @@ def LegalMove(startx, starty, stopx, stopy, currentPiece, MoveCounter) :
 
     #Handle The King
     if "King" in currentPiece :
+        if stopy == 1 and stopx == 2 and Map[4][1] == 'WhiteKing' and Map[1][1] == 'WhiteRook' :
+            if Map[2][1] == 0 and Map[3][1] == 0 and WhiteKingMoved == False :
+                Map[1][1] = Map[4][1] = 0
+                Map[2][1] = 'WhiteKing'
+                Map[3][1] = 'WhiteRook'
+                return 'Castle'
+        if stopy == 1 and stopx == 6 and Map[4][1] == 'WhiteKing' and Map[8][1] == 'WhiteRook' :
+            if Map[5][1] == 0 and Map[6][1] == 0 and Map[7][1] == 0 and WhiteKingMoved == False :
+                Map[8][1] = Map[4][1] = 0
+                Map[6][1] = 'WhiteKing'
+                Map[5][1] = 'WhiteRook'
+                return 'Castle'
+        if stopy == 8 and stopx == 2 and Map[4][8] == 'BlackKing' and Map[1][8] == 'BlackRook' :
+            if Map[2][8] == 0 and Map[3][8] == 0 and BlackKingMoved == False :
+                Map[1][8] = Map[4][8] = 0
+                Map[2][8] = 'BlackKing'
+                Map[3][8] = 'BlackRook'
+                return 'Castle'
+        if stopy == 8 and stopx == 6 and Map[4][8] == 'BlackKing' and Map[8][8] == 'BlackRook' :
+            if Map[5][8] == 0 and Map[6][8] == 0 and Map[7][8] == 0 and BlackKingMoved == False :
+                Map[8][8] = Map[4][8] = 0
+                Map[6][8] = 'BlackKing'
+                Map[5][8] = 'BlackRook'
+                return 'Castle'
         if abs(startx - stopx) > 1 or abs(starty - stopy) > 1:
             return False
 
@@ -431,9 +483,9 @@ def LegalMove(startx, starty, stopx, stopy, currentPiece, MoveCounter) :
         if ((stopx, stopy) not in ListOfMoves) :
             return False
 
-    #Handle The Queen as a Rook and a Bishop at the same time
+    #Handle The Queen
     if "Queen" in currentPiece :
-        ListOfMoves = LegalMoves(startx,starty,"Rook") + LegalMoves(startx,starty,"Bishop")
+        ListOfMoves = LegalMoves(startx,starty,currentPiece)
         if ((stopx, stopy) not in ListOfMoves) :
             return False
 
@@ -451,38 +503,25 @@ def LegalMove(startx, starty, stopx, stopy, currentPiece, MoveCounter) :
 
     return True
 
-def BlackInCheck() :
-    xKing = 0
-    yKing = 0
-    List = []
-    for i in range (1,9) :
-        for j in range(1,9) :
-            if Map[i][j] == 'BlackKing' :
-                xKing = j
-                yKing = i
-            if Map[i][j] != 0 and Map[i][j][0] == 'W' :
-                if "Pawn" in Map[i][j] :
-                    List = List + LegalMoves(i,j,"Pawn")
-                if "Knight" in Map[i][j] :
-                    List = List + LegalMoves(i,j,"Knight")
-                if "Bishop" in Map[i][j] :
-                    List = List + LegalMoves(i,j,"Bishop")
-                if "Rook" in Map[i][j] :
-                    List = List + LegalMoves(i,j,"Rook")
-                if "Queen" in Map[i][j] :
-                    List = List + LegalMoves(i,j,"Queen")
-    if (xKing, yKing) in List :
+def WhiteInCheck(stopx,stopy,currentPiece) :
+    if ((xWhiteKing, yWhiteKing) in LegalMoves(*toSquare(stopx, stopy), currentPiece)):
         return True
     return False
 
+def BlackInCheck(stopx,stopy,currentPiece) :
+    if ((xBlackKing, yBlackKing) in LegalMoves(*toSquare(stopx, stopy), currentPiece)):
+        return True
+    return False
+
+
 #Game loop
-startx = starty = stopx = stopy = 150
 y = WhitePawn
 x = "WhitePawn"
-running = True
-clicked = False
-MoveCounter = 0
-buttonPressTime = 0
+CheckState = []
+whiteInCheck = False
+blackInCheck = False
+
+
 while running :
     for event in pygame.event.get():
         if event.type == pygame.QUIT :
@@ -493,8 +532,32 @@ while running :
             clicked = True
         elif event.type == pygame.MOUSEBUTTONUP :
             (stopx,stopy) = pygame.mouse.get_pos()
-            if toSquare(startx, starty) != toSquare(stopx, stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True :
+            if toSquare(startx, starty) != toSquare(stopx, stopy) \
+                    and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True \
+                        and whiteInCheck is False and blackInCheck is False :
+
                 Move(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
+                if (xWhiteKing, yWhiteKing) in DetLegalMove.GetAllLegalMoves(Map,"Black")  :
+                    whiteInCheck = True
+                if (xBlackKing, yBlackKing) in DetLegalMove.GetAllLegalMoves(Map, "White") :
+                    blackInCheck = True
+                MoveCounter = MoveCounter + 1
+                buttonPressTime = pygame.time.get_ticks()
+                #print(DetLegalMove.GetAllLegalMoves(Map, "Black"))
+            if toSquare(startx, starty) != toSquare(stopx, stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True \
+                    and WhiteInCheck == True :
+                while ((xWhiteKing, yWhiteKing) in DetLegalMove.GetAllLegalMoves(Map,"Black")) :
+                    print("White Checked")
+                    (stopx, stopy) = pygame.mouse.get_pos()
+                    MapSave = copy.deepcopy(Map)
+                    Move(*toSquare(startx,starty),*toSquare(stopx,stopy),currentPiece)
+                    if ((xWhiteKing, yWhiteKing) not in DetLegalMove.GetAllLegalMoves(Map,"Black")) :
+                        WhiteOutOfCheck = True
+                        WhiteInCheck = False
+                        break
+                    Map = copy.deepcopy(MapSave)
+                MoveCounter = MoveCounter + 1
+            if toSquare(startx,starty) != toSquare(stopx,stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) == 'Castle' :
                 MoveCounter = MoveCounter + 1
                 buttonPressTime = pygame.time.get_ticks()
     screen.fill((16, 16, 16))
@@ -505,12 +568,9 @@ while running :
         PrintMap()
     if MoveCounter & 1 == 0 :
         show_turn("White to move", 275,20)
-        DisplayTimeWhite()
         #FlipMap()
     else :
         show_turn("Black to move", 275,560)
-        DisplayTimeBlack()
-    clock.tick(60)
     pygame.display.update()
 
 pygame.quit()
