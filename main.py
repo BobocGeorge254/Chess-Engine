@@ -147,6 +147,29 @@ def Move(startx,starty,stopx,stopy,stringPiece):
     if PawnPromotion is False :
         Map[stopx][stopy] = stringPiece
 
+
+def FakeMove(startx,starty,stopx,stopy,stringPiece):
+    if "King" in stringPiece :
+        if "White" in stringPiece :
+            xWhiteKing = stopx
+            yWhiteKing = stopy
+            WhiteKingMoved = True
+        else :
+            xBlackKing = stopx
+            yBlackKing = stopy
+            BlackKingMoved = True
+    Map[startx][starty] = 0
+    PawnPromotion = False
+    if "Pawn" in stringPiece :
+        if stopy == 1 :
+            Map[stopx][stopy] = "BlackQueen"
+            PawnPromotion = True
+        elif stopy == 8 :
+            Map[stopx][stopy] = "WhiteQueen"
+            PawnPromotion = True
+    if PawnPromotion is False :
+        Map[stopx][stopy] = stringPiece
+
 #Get the square of 2 coordinates
 def toSquare(dx,dy) :
     x = ( dx - 150 ) / 60 + 1
@@ -524,6 +547,8 @@ blackInCheck = False
 
 while running :
     for event in pygame.event.get():
+        if whiteInCheck :
+            print("Check")
         if event.type == pygame.QUIT :
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN :
@@ -532,10 +557,25 @@ while running :
             clicked = True
         elif event.type == pygame.MOUSEBUTTONUP :
             (stopx,stopy) = pygame.mouse.get_pos()
+            if whiteInCheck is True :
+                FakeMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
+                xWhiteKing = toSquare(stopx,stopy)[0]
+                yWhiteKing = toSquare(stopx, stopy)[1]
+                if (xWhiteKing, yWhiteKing) not in DetLegalMove.GetAllLegalMoves(Map,"Black") :
+                    whiteInCheck = False
+                FakeMove(*toSquare(stopx, stopy), *toSquare(startx, starty), currentPiece)
+                #handle
+            elif blackInCheck is True :
+                FakeMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
+                xBlackKing = toSquare(stopx, stopy)[0]
+                yBlackKing = toSquare(stopx, stopy)[1]
+                if (xBlackKing, yBlackKing) not in DetLegalMove.GetAllLegalMoves(Map, "White"):
+                    blackInCheck = False
+                FakeMove(*toSquare(stopx, stopy), *toSquare(startx, starty), currentPiece)
+                #handle
             if toSquare(startx, starty) != toSquare(stopx, stopy) \
                     and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True \
                         and whiteInCheck is False and blackInCheck is False :
-
                 Move(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
                 if (xWhiteKing, yWhiteKing) in DetLegalMove.GetAllLegalMoves(Map,"Black")  :
                     whiteInCheck = True
