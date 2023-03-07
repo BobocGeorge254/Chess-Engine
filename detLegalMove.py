@@ -137,11 +137,19 @@ def LegalMoves(Map,startx, starty,currentPiece,turn):
                 List.append( (startx, starty + 1) )
             if Map[startx][starty + 2] == 0:
                 List.append( (startx, starty + 2) )
+            if Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1] != 0 and Map[startx + 1][starty + 1][0] == 'B':
+                List.append((startx + 1, starty + 1))
+            if Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1] != 0 and Map[startx - 1][starty + 1][0] == 'B':
+                List.append((startx - 1, starty + 1))
         elif turn == 'Black' and starty == 7 :
             if Map[startx][starty - 1] == 0:
                 List.append( (startx, starty - 1) )
             if Map[startx][starty - 2] == 0:
                 List.append( (startx, starty - 2) )
+            if Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] != 0 and Map[startx + 1][starty - 1][0] == 'W':
+                List.append((startx + 1, starty - 1))
+            if Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] != 0 and Map[startx - 1][starty - 1][0] == 'W':
+                List.append((startx - 1, starty - 1))
 
         #Every other move
         else :

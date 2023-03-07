@@ -1,6 +1,6 @@
-import copy
+import pin
 import pygame
-import DetLegalMove
+import detLegalMove
 
 pygame.init()
 screen = pygame.display.set_mode((800,600))
@@ -20,7 +20,7 @@ buttonPressTime = 0
 
 #Title and icon
 pygame.display.set_caption("Chess.com")
-icon = pygame.image.load("chess.png")
+icon = pygame.image.load("Photos/chess.png")
 pygame.display.set_icon(icon)
 BlackKingMoved = WhiteKingMoved = False
 
@@ -57,23 +57,23 @@ def DrawPiece(pieceImg, dx, dy):
     screen.blit(pieceImg,(dx,dy))
 
 #Define pieces
-WhitePawn = pygame.image.load("WhitePawn.png")
-BlackPawn = pygame.image.load("BlackPawn.png")
+WhitePawn = pygame.image.load("Photos/WhitePawn.png")
+BlackPawn = pygame.image.load("Photos/BlackPawn.png")
 
-WhiteKnight = pygame.image.load("WhiteKnight.png")
-BlackKnight = pygame.image.load("BlackKnight.png")
+WhiteKnight = pygame.image.load("Photos/WhiteKnight.png")
+BlackKnight = pygame.image.load("Photos/BlackKnight.png")
 
-WhiteBishop = pygame.image.load("WhiteBishop.png")
-BlackBishop = pygame.image.load("BlackBishop.png")
+WhiteBishop = pygame.image.load("Photos/WhiteBishop.png")
+BlackBishop = pygame.image.load("Photos/BlackBishop.png")
 
-WhiteRook = pygame.image.load("WhiteRook.png")
-BlackRook = pygame.image.load("BlackRook.png")
+WhiteRook = pygame.image.load("Photos/WhiteRook.png")
+BlackRook = pygame.image.load("Photos/BlackRook.png")
 
-WhiteQueen = pygame.image.load("WhiteQueen.png")
-BlackQueen = pygame.image.load("BlackQueen.png")
+WhiteQueen = pygame.image.load("Photos/WhiteQueen.png")
+BlackQueen = pygame.image.load("Photos/BlackQueen.png")
 
-WhiteKing = pygame.image.load("WhiteKing.png")
-BlackKing = pygame.image.load("BlackKing.png")
+WhiteKing = pygame.image.load("Photos/WhiteKing.png")
+BlackKing = pygame.image.load("Photos/BlackKing.png")
 
 #Draw the initial state
 def DrawInitialState():
@@ -258,20 +258,6 @@ def show_turn(turn,dx,dy):
     screen.blit(player,(dx,dy))
 
 
-'''
-current_white_time = current_black_time = currentTime = 0
-def DisplayTimeWhite():
-    current_white_time = pygame.time.get_ticks()
-    score_surf = font.render(f'{100-int(current_white_time/1000)} : 00',False,(255,255,255))
-    score_rect = score_surf.get_rect(center = (70,100))
-    screen.blit(score_surf,score_rect)
-
-def DisplayTimeBlack():
-    current_black_time = pygame.time.get_ticks()
-    score_surf = font.render(f'{100-int(current_black_time/1000)} : 00',False,(255,255,255))
-    score_rect = score_surf.get_rect(center = (70,500))
-    screen.blit(score_surf,score_rect)
-'''
 
 
 def Inside(dx,dy) :
@@ -413,11 +399,19 @@ def LegalMoves(startx, starty,currentPiece):
                 List.append( (startx, starty + 1) )
             if Map[startx][starty + 2] == 0:
                 List.append( (startx, starty + 2) )
+            if Inside(startx + 1, starty + 1) and Map[startx + 1][starty + 1] != 0 and Map[startx + 1][starty + 1][0] == 'B':
+                List.append((startx + 1, starty + 1))
+            if Inside(startx - 1, starty + 1) and Map[startx - 1][starty + 1] != 0 and Map[startx - 1][starty + 1][0] == 'B':
+                List.append((startx - 1, starty + 1))
         elif MoveCounter % 2 == 1 and starty == 7 :
             if Map[startx][starty - 1] == 0:
                 List.append( (startx, starty - 1) )
             if Map[startx][starty - 2] == 0:
                 List.append( (startx, starty - 2) )
+            if Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] != 0 and Map[startx + 1][starty - 1][0] == 'W':
+                List.append((startx + 1, starty - 1))
+            if Inside(startx - 1, starty - 1) and Map[startx - 1][starty - 1] != 0 and Map[startx - 1][starty - 1][0] == 'W':
+                List.append((startx - 1, starty - 1))
 
         #Every other move
         else :
@@ -526,16 +520,30 @@ def LegalMove(startx, starty, stopx, stopy, currentPiece, MoveCounter) :
 
     return True
 
-def WhiteInCheck(stopx,stopy,currentPiece) :
-    if ((xWhiteKing, yWhiteKing) in LegalMoves(*toSquare(stopx, stopy), currentPiece)):
-        return True
-    return False
 
-def BlackInCheck(stopx,stopy,currentPiece) :
-    if ((xBlackKing, yBlackKing) in LegalMoves(*toSquare(stopx, stopy), currentPiece)):
-        return True
-    return False
+def xWhiteKing(Map) :
+    for i in range(1,9) :
+        for j in range(1,9) :
+            if Map[i][j] == "WhiteKing" :
+                return i
 
+def yWhiteKing(Map) :
+    for i in range(1,9) :
+        for j in range(1,9) :
+            if Map[i][j] == "WhiteKing" :
+                return j
+
+def xBlackKing(Map) :
+    for i in range(1,9) :
+        for j in range(1,9) :
+            if Map[i][j] == "BlackKing" :
+                return i
+
+def yBlackKing(Map) :
+    for i in range(1,9) :
+        for j in range(1,9) :
+            if Map[i][j] == "BlackKing" :
+                return j
 
 #Game loop
 y = WhitePawn
@@ -547,8 +555,6 @@ blackInCheck = False
 
 while running :
     for event in pygame.event.get():
-        if whiteInCheck :
-            print("Check")
         if event.type == pygame.QUIT :
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN :
@@ -558,45 +564,36 @@ while running :
         elif event.type == pygame.MOUSEBUTTONUP :
             (stopx,stopy) = pygame.mouse.get_pos()
             if whiteInCheck is True :
+                #if white in check, do a move, see if it's possible, then undo it
                 FakeMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
-                xWhiteKing = toSquare(stopx,stopy)[0]
-                yWhiteKing = toSquare(stopx, stopy)[1]
-                if (xWhiteKing, yWhiteKing) not in DetLegalMove.GetAllLegalMoves(Map,"Black") :
+                #if "King" in currentPiece :
+                    #xWhiteKing = toSquare(stopx,stopy)[0]
+                    #yWhiteKing = toSquare(stopx, stopy)[1]
+                if (xWhiteKing(Map), yWhiteKing(Map)) not in detLegalMove.GetAllLegalMoves(Map, "Black") :
                     whiteInCheck = False
                 FakeMove(*toSquare(stopx, stopy), *toSquare(startx, starty), currentPiece)
                 #handle
             elif blackInCheck is True :
+                #if black in check, do a move, see if it's possible, then undo it
                 FakeMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
-                xBlackKing = toSquare(stopx, stopy)[0]
-                yBlackKing = toSquare(stopx, stopy)[1]
-                if (xBlackKing, yBlackKing) not in DetLegalMove.GetAllLegalMoves(Map, "White"):
+                #if "King" in currentPiece :
+                    #xBlackKing = toSquare(stopx, stopy)[0]
+                    #yBlackKing = toSquare(stopx, stopy)[1]
+                if (xBlackKing(Map), yBlackKing(Map)) not in detLegalMove.GetAllLegalMoves(Map, "White"):
                     blackInCheck = False
                 FakeMove(*toSquare(stopx, stopy), *toSquare(startx, starty), currentPiece)
                 #handle
             if toSquare(startx, starty) != toSquare(stopx, stopy) \
                     and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True \
-                        and whiteInCheck is False and blackInCheck is False :
+                        and whiteInCheck is False and blackInCheck is False \
+                            and pin.Pinned(Map, *toSquare(startx, starty)) is False:
                 Move(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece)
-                if (xWhiteKing, yWhiteKing) in DetLegalMove.GetAllLegalMoves(Map,"Black")  :
+                if (xWhiteKing(Map), yWhiteKing(Map)) in detLegalMove.GetAllLegalMoves(Map, "Black") :
                     whiteInCheck = True
-                if (xBlackKing, yBlackKing) in DetLegalMove.GetAllLegalMoves(Map, "White") :
+                if (xBlackKing(Map), yBlackKing(Map)) in detLegalMove.GetAllLegalMoves(Map, "White") :
                     blackInCheck = True
                 MoveCounter = MoveCounter + 1
                 buttonPressTime = pygame.time.get_ticks()
-                #print(DetLegalMove.GetAllLegalMoves(Map, "Black"))
-            if toSquare(startx, starty) != toSquare(stopx, stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) is True \
-                    and WhiteInCheck == True :
-                while ((xWhiteKing, yWhiteKing) in DetLegalMove.GetAllLegalMoves(Map,"Black")) :
-                    print("White Checked")
-                    (stopx, stopy) = pygame.mouse.get_pos()
-                    MapSave = copy.deepcopy(Map)
-                    Move(*toSquare(startx,starty),*toSquare(stopx,stopy),currentPiece)
-                    if ((xWhiteKing, yWhiteKing) not in DetLegalMove.GetAllLegalMoves(Map,"Black")) :
-                        WhiteOutOfCheck = True
-                        WhiteInCheck = False
-                        break
-                    Map = copy.deepcopy(MapSave)
-                MoveCounter = MoveCounter + 1
             if toSquare(startx,starty) != toSquare(stopx,stopy) and LegalMove(*toSquare(startx, starty), *toSquare(stopx, stopy), currentPiece, MoveCounter) == 'Castle' :
                 MoveCounter = MoveCounter + 1
                 buttonPressTime = pygame.time.get_ticks()
@@ -613,8 +610,4 @@ while running :
         show_turn("Black to move", 275,560)
     pygame.display.update()
 
-<<<<<<< HEAD
 pygame.quit()
-=======
-pygame.quit()
->>>>>>> 5ee995a (Check partially works)
