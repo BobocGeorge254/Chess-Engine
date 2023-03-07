@@ -613,4 +613,8 @@ while running :
         show_turn("Black to move", 275,560)
     pygame.display.update()
 
+<<<<<<< HEAD
 pygame.quit()
+=======
+pygame.quit()
+>>>>>>> 5ee995a (Check partially works)
