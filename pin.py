@@ -1,266 +1,113 @@
-def Inside(dx,dy) :
-    return dx >= 1 and dx <= 8 and dy >= 1 and dy <= 8
-
-def xWhiteKing(Map) :
-    for i in range(1,9) :
-        for j in range(1,9) :
-            if Map[i][j] == "WhiteKing" :
-                return i
-
-def yWhiteKing(Map) :
-    for i in range(1,9) :
-        for j in range(1,9) :
-            if Map[i][j] == "WhiteKing" :
-                return j
-
-def xBlackKing(Map) :
-    for i in range(1,9) :
-        for j in range(1,9) :
-            if Map[i][j] == "BlackKing" :
-                return i
-
-def yBlackKing(Map) :
-    for i in range(1,9) :
-        for j in range(1,9) :
-            if Map[i][j] == "BlackKing" :
-                return j
-
-def Pinned(Map, startx, stopx) :
-    pinnedPieces = []
-    ct = 0
-    i = xWhiteKing(Map) + 1
-    j = yWhiteKing(Map) + 1
-    while Inside(i,j) :
-        if Map[i][j] != 0 :
-            if "White" in Map[i][j] :
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1 :
-                if Map[i][j] == "BlackBishop" or Map[i][j] == "BlackQueen" :
-                    pinnedPieces.append((pinX,pinY))
-        i = i + 1
-        j = j + 1
-
-    ct = 0
-    i = xWhiteKing(Map) + 1
-    j = yWhiteKing(Map) - 1
-    while Inside(i,j) :
-        if Map[i][j] != 0 :
-            if "White" in Map[i][j] :
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1 :
-                if Map[i][j] == "BlackBishop" or Map[i][j] == "BlackQueen" :
-                    pinnedPieces.append((pinX,pinY))
-        i = i + 1
-        j = j - 1
-
-    ct = 0
-    i = xWhiteKing(Map) - 1
-    j = yWhiteKing(Map) + 1
-    while Inside(i,j) :
-        if Map[i][j] != 0 :
-            if "White" in Map[i][j] :
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1 :
-                if Map[i][j] == "BlackBishop" or Map[i][j] == "BlackQueen" :
-                    pinnedPieces.append((pinX,pinY))
-        i = i - 1
-        j = j + 1
-
-    ct = 0
-    i = xWhiteKing(Map) - 1
-    j = yWhiteKing(Map) - 1
-    while Inside(i,j) :
-        if Map[i][j] != 0 :
-            if "White" in Map[i][j] :
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1 :
-                if Map[i][j] == "BlackBishop" or Map[i][j] == "BlackQueen" :
-                    pinnedPieces.append((pinX,pinY))
-        i = i - 1
-        j = j - 1
-
-    ct = 0
-    i = xWhiteKing(Map)
-    j = yWhiteKing(Map) - 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "White" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1:
-                if Map[i][j] == "BlackRook" or Map[i][j] == "BlackQueen":
-                    pinnedPieces.append((pinX, pinY))
-        j = j - 1
-
-    ct = 0
-    i = xWhiteKing(Map)
-    j = yWhiteKing(Map) + 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "White" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1:
-                if Map[i][j] == "BlackRook" or Map[i][j] == "BlackQueen":
-                    pinnedPieces.append((pinX, pinY))
-        j = j + 1
-
-    ct = 0
-    i = xWhiteKing(Map) - 1
-    j = yWhiteKing(Map)
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "White" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1:
-                if Map[i][j] == "BlackRook" or Map[i][j] == "BlackQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i - 1
-
-    ct = 0
-    i = xWhiteKing(Map) + 1
-    j = yWhiteKing(Map)
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "White" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "Black" in Map[i][j] and ct == 1:
-                if Map[i][j] == "BlackRook" or Map[i][j] == "BlackQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i + 1
+def getPiece(dx, dy, Map):
+    return Map[dx][dy]
 
 
+def Inside(dx, dy):
+    return 1 <= dx <= 8 and 1 <= dy <= 8
 
 
-    ct = 0
-    i = xBlackKing(Map) + 1
-    j = yBlackKing(Map) + 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteBishop" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i + 1
-        j = j + 1
+def isPiecePinned(dx, dy, Map):
+    piece = getPiece(dx, dy, Map)
 
-    ct = 0
-    i = xBlackKing(Map) + 1
-    j = yBlackKing(Map) - 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteBishop" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i + 1
-        j = j - 1
+    if piece == 0:
+        return False
 
-    ct = 0
-    i = xBlackKing(Map) - 1
-    j = yBlackKing(Map) + 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteBishop" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i - 1
-        j = j + 1
+    # Find the king's position
+    king = "WhiteKing" if piece.startswith("White") else "BlackKing"
+    kingPosition = None
+    for i in range(1, 9):
+        for j in range(1, 9):
+            if getPiece(i, j, Map) == king:
+                kingPosition = (i, j)
+                break
 
-    ct = 0
-    i = xBlackKing(Map) - 1
-    j = yBlackKing(Map) - 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteBishop" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i - 1
-        j = j - 1
+    # Check if the piece is on the same row, column, or diagonal as the king
+    if dx == kingPosition[0] or dy == kingPosition[1] or abs(dx - kingPosition[0]) == abs(dy - kingPosition[1]):
+        legal_moves = []  # List to store legal moves for pinned piece
 
-    ct = 0
-    i = xBlackKing(Map) - 1
-    j = yBlackKing(Map)
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteRook" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i - 1
+        # Check if there is an opposing rook or queen along the same row or column
+        if dx == kingPosition[0]:
+            direction = 1 if dy > kingPosition[1] else -1
 
-    ct = 0
-    i = xBlackKing(Map) + 1
-    j = yBlackKing(Map)
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteRook" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        i = i + 1
+            j = dy - direction
+            while Inside(dx, j):
+                if getPiece(dx, j, Map) != 0:
+                    if (piece.startswith("White") and getPiece(dx, j, Map) != "WhiteKing") or (
+                            piece.startswith("Black") and getPiece(dx, j, Map) != "BlackKing"):
+                        return False
+                    else:
+                        break
+                legal_moves.append((dx, j))  # Add legal move
+                j -= direction
 
-    ct = 0
-    i = xBlackKing(Map)
-    j = yBlackKing(Map) - 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteRook" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        j = j - 1
+            j = dy + direction
+            while Inside(dx, j):
+                if getPiece(dx, j, Map) != 0:
+                    if (piece.startswith("White") and getPiece(dx, j, Map) in ["BlackRook", "BlackQueen"]) or (
+                            piece.startswith("Black") and getPiece(dx, j, Map) in ["WhiteRook", "WhiteQueen"]):
+                        legal_moves.append((dx, j))
+                        return legal_moves  # Return legal moves
+                    else:
+                        break
+                legal_moves.append((dx, j))  # Add legal move
+                j += direction
 
-    ct = 0
-    i = xBlackKing(Map)
-    j = yBlackKing(Map) + 1
-    while Inside(i, j):
-        if Map[i][j] != 0:
-            if "Black" in Map[i][j]:
-                ct = ct + 1
-                pinX = i
-                pinY = j
-            elif "White" in Map[i][j] and ct == 1:
-                if Map[i][j] == "WhiteRook" or Map[i][j] == "WhiteQueen":
-                    pinnedPieces.append((pinX, pinY))
-        j = j + 1
+        elif dy == kingPosition[1]:
+            direction = 1 if dx > kingPosition[0] else -1
 
-    pin = (startx, stopx) in pinnedPieces
-    return pin
+            i = dx - direction
+            while Inside(i, dy):
+                if getPiece(i, dy, Map) != 0:
+                    if (piece.startswith("White") and getPiece(i, dy, Map) != "WhiteKing") or (
+                            piece.startswith("Black") and getPiece(i, dy, Map) != "BlackKing"):
+                        return False
+                    else:
+                        break
+                legal_moves.append((i, dy))  # Add legal move
+                i -= direction
+
+            i = dx + direction
+            while Inside(i, dy):
+                if getPiece(i, dy, Map) != 0:
+                    if (piece.startswith("White") and getPiece(i, dy, Map) in ["BlackRook", "BlackQueen"]) or (
+                            piece.startswith("Black") and getPiece(i, dy, Map) in ["WhiteRook", "WhiteQueen"]):
+                        legal_moves.append((i, dy))
+                        return legal_moves  # Return legal moves
+                    else:
+                        break
+                legal_moves.append((i, dy))  # Add legal move
+                i += direction
+        else:
+            dxDirection = 1 if dx > kingPosition[0] else -1
+            dyDirection = 1 if dy > kingPosition[1] else -1
+
+            i = dx - dxDirection
+            j = dy - dyDirection
+            while Inside(i, j):
+                if getPiece(i, j, Map) != 0:
+                    if (piece.startswith("White") and getPiece(i, j, Map) != "WhiteKing") or (
+                            piece.startswith("Black") and getPiece(i, j, Map) != "BlackKing"):
+                        return False
+                    else:
+                        break
+                legal_moves.append((i, j))  # Add legal move
+                i -= dxDirection
+                j -= dyDirection
+
+            i = dx + dxDirection
+            j = dy + dyDirection
+            while Inside(i, j):
+                if getPiece(i, j, Map) != 0:
+                    if (piece.startswith("White") and getPiece(i, j, Map) in ["BlackBishop", "BlackQueen"]) or (
+                            piece.startswith("Black") and getPiece(i, j, Map) in ["WhiteBishop", "WhiteQueen"]):
+                        legal_moves.append((i, j))
+                        return legal_moves  # Return legal moves
+                    else:
+                        break
+                legal_moves.append((i, j))  # Add legal move
+                i += dxDirection
+                j += dyDirection
+
+        return False
+
+    return False
