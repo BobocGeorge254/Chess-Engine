@@ -361,16 +361,16 @@ def getKingMoves(Map, turn):
     if kingPosition not in opponentMoves:
         # Check kingside castling
         if (
-                Map[kingPosition[0]][kingPosition[1] - 1] == 0
-                and Map[kingPosition[0]][kingPosition[1] - 2] == 0
+                Map[kingPosition[0]][kingPosition[1] - 1] == 0 and (kingPosition[0], kingPosition[1] - 1) not in opponentMoves
+                and Map[kingPosition[0]][kingPosition[1] - 2] == 0 and (kingPosition[0], kingPosition[1] - 2) not in opponentMoves
                 and Map[kingside_rook_position[0]][kingside_rook_position[1]] == turn + "Rook"
         ):
             kingMoves.append((kingPosition[0], kingPosition[1] - 2))
 
         # Check queenside castling
         if (
-                Map[kingPosition[0]][kingPosition[1] + 1] == 0
-                and Map[kingPosition[0]][kingPosition[1] + 2] == 0
+                Map[kingPosition[0]][kingPosition[1] + 1] == 0 and (kingPosition[0], kingPosition[1] + 1) not in opponentMoves
+                and Map[kingPosition[0]][kingPosition[1] + 2] == 0 and (kingPosition[0], kingPosition[1] - 1) not in opponentMoves
                 and Map[kingPosition[0]][kingPosition[1] + 3] == 0
                 and Map[queenside_rook_position[0]][queenside_rook_position[1]] == turn + "Rook"
         ):
