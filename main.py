@@ -108,6 +108,8 @@ def makeMove(startx, starty, stopx, stopy, Map, flag=0):
 # Game loop
 Map = [[0 for _ in range(9)] for _ in range(9)]
 clicked = False
+whiteKingMoved = False
+blackKingMoved = False
 
 
 while running:
@@ -121,13 +123,11 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP:
             (stopx, stopy) = pygame.mouse.get_pos()
             turn = "White" if MoveCounter % 2 == 0 else "Black"
-            if turn == "Black":
-                print(engine.bestMove(Map, 1))
             destinationSquare = table.toSquare(stopx, stopy)
             startingSquare = table.toSquare(startx, starty)
             if (
                     destinationSquare in moves.legalMoves(Map, *startingSquare, getPiece(*startingSquare), turn)[0]) \
-                    or ("King" in getPiece(*startingSquare) and destinationSquare in moves.getKingMoves(Map, turn)
+                    or ("King" in getPiece(*startingSquare) and destinationSquare in moves.getKingMoves(Map, turn, whiteKingMoved, blackKingMoved)
             ):
                 tempMap = [[piece for piece in row] for row in Map]
                 makeMove(startx, starty, stopx, stopy, tempMap)
@@ -135,10 +135,16 @@ while running:
                         ("White" in turn and not check.isWhiteInCheck(tempMap))
                         or ("Black" in turn and not check.isBlackInCheck(tempMap))
                 ):
+                    if getPiece(*startingSquare) == "WhiteKing":
+                        whiteKingMoved = True
+                    if getPiece(*startingSquare) == "BlackKing":
+                        blackKingMoved = True
                     makeMove(startx, starty, stopx, stopy, Map)
                     MoveCounter += 1  # Increment the move counter
                     moveMade = True
-                    score = evaluation.evaluatePosition(Map)  # Update the evaluation score
+                    #score = evaluation.evaluatePosition(Map)  # Update the evaluation score
+                    if turn == "Black":
+                        print(engine.bestMove(Map, 2))
 
     screen.fill((16, 16, 16))
     DrawTable()

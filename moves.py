@@ -262,7 +262,7 @@ def legalMoves(Map, startx, starty, currentPiece, turn):
                 List.append((startx + 1, starty + 1))
             if Inside(startx + 1, starty - 1) and Map[startx + 1][starty - 1] != 0 and Map[startx + 1][starty - 1].startswith("Black"):
                 List.append((startx + 1, starty - 1))
-                
+
         elif turn == "Black" and startx == 7:
             if Map[startx - 1][starty] == 0:
                 List.append((startx - 1, starty))
@@ -326,12 +326,21 @@ def getAllAttackingMoves(Map, turn):
     return allAttackingMoves
 
 
-def getKingMoves(Map, turn):
+def getKingMoves(Map, turn, whiteKingMoved, blackKingMoved):
     kingMoves = []
     directions = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)]
 
     kingPosition = findPiece(turn + "King", Map)
     opposingKingPosition = findPiece("WhiteKing" if turn == "Black" else "BlackKing", Map)
+
+    if opposingKingPosition is None:
+        return kingMoves
+
+    kingMoved = False
+    if turn == "White":
+        kingMoved = whiteKingMoved
+    else:
+        kingMoved = blackKingMoved
 
     opponentMoves = getAllAttackingMoves(Map, "White" if turn == "Black" else "Black")
     possibleOppenentKingMoves = []
@@ -358,9 +367,11 @@ def getKingMoves(Map, turn):
         kingside_rook_position = (8, 1)
         queenside_rook_position = (8, 8)
 
-    if kingPosition not in opponentMoves:
+    if (kingPosition == (1, 4) or kingPosition == (8, 4)) and kingPosition not in opponentMoves:
         # Check kingside castling
         if (
+                Inside(kingPosition[0], kingPosition[1] - 1) and
+                Inside(kingPosition[0], kingPosition[1] - 2) and
                 Map[kingPosition[0]][kingPosition[1] - 1] == 0 and (kingPosition[0], kingPosition[1] - 1) not in opponentMoves
                 and Map[kingPosition[0]][kingPosition[1] - 2] == 0 and (kingPosition[0], kingPosition[1] - 2) not in opponentMoves
                 and Map[kingside_rook_position[0]][kingside_rook_position[1]] == turn + "Rook"
@@ -369,6 +380,9 @@ def getKingMoves(Map, turn):
 
         # Check queenside castling
         if (
+                Inside(kingPosition[0], kingPosition[1] + 1) and
+                Inside(kingPosition[0], kingPosition[1] + 2) and
+                Inside(kingPosition[0], kingPosition[1] + 3) and
                 Map[kingPosition[0]][kingPosition[1] + 1] == 0 and (kingPosition[0], kingPosition[1] + 1) not in opponentMoves
                 and Map[kingPosition[0]][kingPosition[1] + 2] == 0 and (kingPosition[0], kingPosition[1] - 1) not in opponentMoves
                 and Map[kingPosition[0]][kingPosition[1] + 3] == 0
@@ -391,7 +405,7 @@ def getAllLegalMovesWhite(Map):
                         for move in pieceMoves:
                             legal_moves.append((i, j, *move))
                 else:
-                    pieceMoves = getKingMoves(Map, "White")
+                    pieceMoves = getKingMoves(Map, "White", whiteKingMoved=False, blackKingMoved=False)
                     if pieceMoves:
                         for move in pieceMoves:
                             legal_moves.append((i, j, *move))
@@ -410,7 +424,7 @@ def getAllLegalMovesBlack(Map):
                         for move in pieceMoves:
                             legal_moves.append((i, j, *move))
                 else:
-                    pieceMoves = getKingMoves(Map, "Black")
+                    pieceMoves = getKingMoves(Map, "Black", whiteKingMoved=False, blackKingMoved=False)
                     if pieceMoves:
                         for move in pieceMoves:
                             legal_moves.append((i, j, *move))

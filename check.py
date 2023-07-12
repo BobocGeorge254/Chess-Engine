@@ -113,7 +113,7 @@ def isCheckmate(Map, turn):
                         if "King" not in piece:
                             legalMoves = moves.legalMoves(tempMap, i, j, piece, "White")
                         else:
-                            legalMoves = moves.getKingMoves(tempMap, "White")
+                            legalMoves = moves.getKingMoves(tempMap, "White", whiteKingMoved=False, blackKingMoved=False)
                             legalMoves = [legalMoves, [0]]
                         for move in legalMoves[0]:
                             # Try making each legal move on the temporary map
@@ -131,7 +131,7 @@ def isCheckmate(Map, turn):
                         if "King" not in piece:
                             legalMoves = moves.legalMoves(tempMap, i, j, piece, "Black")
                         else:
-                            legalMoves = moves.getKingMoves(tempMap, "Black")
+                            legalMoves = moves.getKingMoves(tempMap, "Black", whiteKingMoved=False, blackKingMoved=False)
                             legalMoves = [legalMoves, [0]]
                         for move in legalMoves[0]:
                             # Try making each legal move on the temporary map

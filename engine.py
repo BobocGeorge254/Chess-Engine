@@ -21,7 +21,7 @@ def makeMove(startx, starty, stopx, stopy, Map, flag=0):
     piece = getPiece(*startSquare, Map)
 
     PawnPromotion = False
-    if "Pawn" in piece:
+    if isinstance(piece, str) and "Pawn" in piece:
         if stopSquare[0] == 1:
             Map[stopSquare[0]][stopSquare[1]] = "BlackQueen"
             Map[startSquare[0]][startSquare[1]] = 0
@@ -72,6 +72,7 @@ def makeMove(startx, starty, stopx, stopy, Map, flag=0):
             Map[stopSquare[0]][stopSquare[1]] = piece
             Map[startSquare[0]][startSquare[1]] = 0
 
+    return Map
 
 
 def minimaxWhite(Map, depth, alpha, beta, maximizingPlayer):
@@ -117,4 +118,4 @@ def bestMove(Map, depth):
             bestScore = score
             bestMove = move
 
-    return bestMove
+    return bestMove, bestScore

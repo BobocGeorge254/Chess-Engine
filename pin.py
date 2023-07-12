@@ -23,6 +23,9 @@ def isPiecePinned(dx, dy, Map):
         if kingPosition is not None:
             break
 
+    if kingPosition is None:
+        return False
+
     # Check if the piece is on the same row, column, or diagonal as the king
     if dx == kingPosition[0] or dy == kingPosition[1] or abs(dx - kingPosition[0]) == abs(dy - kingPosition[1]):
         legal_moves = []  # List to store legal moves for pinned piece
