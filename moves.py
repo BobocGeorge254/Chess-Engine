@@ -379,6 +379,47 @@ def getKingMoves(Map, turn):
     return kingMoves
 
 
+def getAllLegalMovesWhite(Map):
+    legal_moves = []
+    for i in range(1, 9):
+        for j in range(1, 9):
+            piece = Map[i][j]
+            if piece != 0 and piece.startswith("White"):
+                if "King" not in piece:
+                    pieceMoves = legalMoves(Map, i, j, piece, "White")[0]
+                    if pieceMoves:
+                        for move in pieceMoves:
+                            legal_moves.append((i, j, *move))
+                else:
+                    pieceMoves = getKingMoves(Map, "White")
+                    if pieceMoves:
+                        for move in pieceMoves:
+                            legal_moves.append((i, j, *move))
+    return legal_moves
+
+
+def getAllLegalMovesBlack(Map):
+    legal_moves = []
+    for i in range(1, 9):
+        for j in range(1, 9):
+            piece = Map[i][j]
+            if piece != 0 and piece.startswith("Black"):
+                if "King" not in piece:
+                    pieceMoves = legalMoves(Map, i, j, piece, "Black")[0]
+                    if pieceMoves:
+                        for move in pieceMoves:
+                            legal_moves.append((i, j, *move))
+                else:
+                    pieceMoves = getKingMoves(Map, "Black")
+                    if pieceMoves:
+                        for move in pieceMoves:
+                            legal_moves.append((i, j, *move))
+    return legal_moves
+
+
+
+
+
 
 
 

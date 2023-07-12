@@ -20,6 +20,8 @@ def isPiecePinned(dx, dy, Map):
             if getPiece(i, j, Map) == king:
                 kingPosition = (i, j)
                 break
+        if kingPosition is not None:
+            break
 
     # Check if the piece is on the same row, column, or diagonal as the king
     if dx == kingPosition[0] or dy == kingPosition[1] or abs(dx - kingPosition[0]) == abs(dy - kingPosition[1]):

@@ -1,39 +1,9 @@
-import pygame
-
-import check
-import table
-import moves
 import evaluation
-import engine
-
-pygame.init()
-screen = pygame.display.set_mode((800, 600))
-white = (255, 255, 255)
-black = (153, 76, 0)
-clock = pygame.time.Clock()
-running = True
-MoveCounter = 0
-
-# Title and icon
-pygame.display.set_caption("Chess.com")
-icon = pygame.image.load("Photos/chess.png")
-pygame.display.set_icon(icon)
+import moves
+import table
 
 
-# Draw Squares
-def DrawSquare(dx, dy, color):
-    pygame.draw.rect(screen, color, (dx, dy, 60, 60))
-
-
-# Draw table
-def DrawTable():
-    for i in range(8):
-        for j in range(8):
-            color = white if (i + j) % 2 == 0 else black
-            DrawSquare(i * 60 + 150, j * 60 + 60, color)
-
-
-def getPiece(dx, dy):
+def getPiece(dx, dy, Map):
     return Map[dx][dy]
 
 
@@ -48,7 +18,7 @@ def makeMove(startx, starty, stopx, stopy, Map, flag=0):
         stopSquare = (stopx, stopy)
 
     # Get the piece in the start square
-    piece = getPiece(*startSquare)
+    piece = getPiece(*startSquare, Map)
 
     PawnPromotion = False
     if "Pawn" in piece:
@@ -104,53 +74,47 @@ def makeMove(startx, starty, stopx, stopy, Map, flag=0):
 
 
 
-
-# Game loop
-Map = [[0 for _ in range(9)] for _ in range(9)]
-clicked = False
-
-
-while running:
-    moveMade = False
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            (startx, starty) = pygame.mouse.get_pos()
-            clicked = True
-        elif event.type == pygame.MOUSEBUTTONUP:
-            (stopx, stopy) = pygame.mouse.get_pos()
-            turn = "White" if MoveCounter % 2 == 0 else "Black"
-            if turn == "Black":
-                print(engine.bestMove(Map, 1))
-            destinationSquare = table.toSquare(stopx, stopy)
-            startingSquare = table.toSquare(startx, starty)
-            if (
-                    destinationSquare in moves.legalMoves(Map, *startingSquare, getPiece(*startingSquare), turn)[0]) \
-                    or ("King" in getPiece(*startingSquare) and destinationSquare in moves.getKingMoves(Map, turn)
-            ):
-                tempMap = [[piece for piece in row] for row in Map]
-                makeMove(startx, starty, stopx, stopy, tempMap)
-                if (
-                        ("White" in turn and not check.isWhiteInCheck(tempMap))
-                        or ("Black" in turn and not check.isBlackInCheck(tempMap))
-                ):
-                    makeMove(startx, starty, stopx, stopy, Map)
-                    MoveCounter += 1  # Increment the move counter
-                    moveMade = True
-                    score = evaluation.evaluatePosition(Map)  # Update the evaluation score
-
-    screen.fill((16, 16, 16))
-    DrawTable()
-
-    if clicked is False:
-        table.DrawInitialState(screen, Map)
+def minimaxWhite(Map, depth, alpha, beta, maximizingPlayer):
+    if depth == 0:
+        return evaluation.evaluatePosition(Map)
+    if maximizingPlayer:
+        legalMoves = moves.getAllLegalMovesWhite(Map)
+        maxEval = float('-inf')
+        for move in legalMoves:
+            tempMap = makeMove(*move, Map, 1)  # Make the move on a temporary map
+            depthEvaluation = minimaxWhite(tempMap, depth - 1, alpha, beta, False)
+            maxEval = max(maxEval, depthEvaluation)
+            alpha = max(alpha, depthEvaluation)
+            if beta <= alpha:
+                break
+        return maxEval
     else:
-        table.PrintMap(screen, Map)
+        legalMoves = moves.getAllLegalMovesBlack(Map)
+        minEval = float('inf')
+        for move in legalMoves:
+            tempMap = makeMove(*move, Map, 1)  # Make the move on a temporary map
+            depthEvaluation = minimaxWhite(tempMap, depth - 1, alpha, beta, True)
+            minEval = min(minEval, depthEvaluation)
+            beta = min(beta, depthEvaluation)
+            if beta <= alpha:
+                break
+        return minEval
 
-    table.showCurrentTurn(screen, MoveCounter)
-    pygame.display.update()
-    if moveMade:
-        continue
 
-pygame.quit()
+def bestMove(Map, depth):
+    legalMoves = moves.getAllLegalMovesWhite(Map)
+    bestScore = float('-inf')
+    bestMove = None
+    alpha = float('-inf')
+    beta = float('inf')
+
+    for move in legalMoves:
+        tempMap = [[piece for piece in row] for row in Map]  # Create a copy of the map
+        makeMove(*move, tempMap, 1)  # Make the move on the temporary map
+        score = minimaxWhite(tempMap, depth - 1, alpha, beta, False)
+
+        if score > bestScore:
+            bestScore = score
+            bestMove = move
+
+    return bestMove
